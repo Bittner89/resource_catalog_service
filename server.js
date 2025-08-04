@@ -16,9 +16,13 @@ app.get('/', (req, res) => {
 });
 
 app.get('/resources', (req, res) => {
+    try {
     const data = readFileSync(data_file, 'utf8')
     const resources = JSON.parse(data);
     res.json(resources);
+    } catch (error) {
+        res.status(500).json({ error: 'Interner Serverfehler beim Laden der Daten' })
+    }
 });
 
 app.listen(port, () => {
