@@ -17,9 +17,28 @@ app.get('/', (req, res) => {
 
 app.get('/resources', (req, res) => {
     try {
-    const data = readFileSync(data_file, 'utf8')
-    const resources = JSON.parse(data);
-    res.json(resources);
+        const data = readFileSync(data_file, 'utf8')
+        const resources = JSON.parse(data);
+        res.json(resources);
+    } catch (error) {
+        res.status(500).json({ error: 'Interner Serverfehler beim Laden der Daten' })
+    }
+});
+
+app.get('/resources/:id', (req, res) => {
+    try {
+        const resourceId = req.params.id;
+        const data = readFileSync(data_file, 'utf8')
+        const resources = JSON.parse(data);
+        const resource = resources.find(r => r.id === resourceId);
+
+        if (resource) {
+            res.json(resource);
+        } else {
+            res.status(404).json({ error: 'Ressource mit ID ${resourceId} nicht gefunden.' })
+        }
+
+
     } catch (error) {
         res.status(500).json({ error: 'Interner Serverfehler beim Laden der Daten' })
     }
