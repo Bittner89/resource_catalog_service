@@ -1,7 +1,9 @@
 import express from 'express';
-import { readFileSync } from 'fs';
+import { readFileSync, writeFileSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { v4 as uuidv4 } from 'uuid';
+
 
 const router = express.Router();
 
@@ -15,7 +17,7 @@ router.get('/', (req, res) => {
         const resources = JSON.parse(data);
         res.json(resources);
     } catch (error) {
-        res.status(500).json({ error: 'Interner Serverfehler beim Laden der Daten' })
+        res.status(500).json({ error: 'Interner Serverfehler beim Laden der Daten.' })
     }
 });
 
@@ -34,9 +36,39 @@ router.get('/:id', (req, res) => {
 
 
     } catch (error) {
-        res.status(500).json({ error: 'Interner Serverfehler beim Laden der Daten' })
+        res.status(500).json({ error: 'Interner Serverfehler beim Laden der Daten.' })
     }
 });
 
+
+router.post('/', (req, res) => {
+    const newData = req.body;
+
+    if (!newData.title || !newData.type) {
+        res.status(400).json({ error: 'title und type sind erforderlich.' });
+        return;
+    }
+
+    const newResource = {
+        id: uuidv4(),
+        ...newData
+    }
+
+    try {
+        const data = readFileSync(data_file, 'utf8')
+        const resources = JSON.parse(data);
+
+        resources.push(newResource);
+
+        writeFileSync(data_file, JSON.stringify(resources, null, 2), 'utf8');
+
+        res.status(201).json(newResource);
+
+    } catch (error) {
+        res.status(500).json({ error: 'Interner Serverfehler bei der Verarbeitung der Resourcen-Daten.' })
+    }
+
+
+});
 
 export default router;

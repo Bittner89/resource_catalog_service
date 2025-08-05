@@ -6,6 +6,7 @@ const port = 5002;
 const app = express();
 
 app.use(express.json());
+
 app.use('/resources', resourcesRouter);
 
 app.listen(port, () => {
