@@ -31,11 +31,11 @@ router.get('/:id', (req, res, next) => {
         if (resource) {
             res.json(resource);
         } else {
-            next(error);
+             res.status(404).json({ error: `Ressource mit ID ${resourceId} nicht gefunden.` })
         }
 
     } catch (error) {
-        res.status(500).json({ error: 'Interner Serverfehler beim Laden der Daten.' })
+        next(error);
     }
 });
 
