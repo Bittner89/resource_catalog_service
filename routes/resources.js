@@ -103,9 +103,33 @@ router.put('/:id', (req, res) => {
     } catch(error) {
         res.status(500).json({ error: 'Interner Serverfehler bei der Verarbeitung der Resourcen-Daten.' })
     }
-
-
-
 });
+
+router.delete('/:id', (req, res) => {
+
+    const resourceId = req.params.id;
+
+    try {
+        const data = readFileSync(data_file, 'utf8')
+        const resources = JSON.parse(data);
+
+
+        const resourceIndex = resources.findIndex(r => r.id === resourceId);
+
+        if(resourceIndex === -1) {
+            res.status(404).json({error: `Ressource mit Id ${resourceId} nicht gefunden.`});
+            return;
+        };
+
+        resources.splice(resourceIndex, 1 );
+        writeFileSync(data_file, JSON.stringify(resources, null, 2), 'utf8');
+        res.status(204).json({ error: "Löschung war erfolgreich."});
+        
+
+        } catch(error) {
+        res.status(500).json({ error: 'Interner Serverfehler bei der Verarbeitung der Resourcen-Daten.' })
+    }
+});
+
 
 export default router;
