@@ -71,4 +71,41 @@ router.post('/', (req, res) => {
 
 });
 
+
+router.put('/:id', (req, res) => {
+    
+    const resourceId = req.params.id;
+    const newData = req.body;
+
+    if (!newData || Object.keys(newData).length === 0) {
+        res.status(400).json({error: 'Keine Daten zum Aktualisieren vorhanden'});
+        return;
+
+    }
+
+    try {
+        const data = readFileSync(data_file, 'utf8')
+        const resources = JSON.parse(data);
+
+
+        const resourceIndex = resources.findIndex(r => r.id === resourceId);
+
+        if(resourceIndex === -1) {
+            res.status(404).json({error: `Ressource mit Id ${resourceId} nicht gefunden.`});
+            return;
+        }
+
+            resources[resourceIndex] = {...resources[resourceIndex], ...newData};
+            writeFileSync(data_file, JSON.stringify(resources, null, 2), 'utf8');
+
+            res.status(200).json(resources[resourceIndex]);
+
+    } catch(error) {
+        res.status(500).json({ error: 'Interner Serverfehler bei der Verarbeitung der Resourcen-Daten.' })
+    }
+
+
+
+});
+
 export default router;
