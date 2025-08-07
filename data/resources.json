@@ -24,5 +24,11 @@
     "title": "Einführung in die Webentwicklung",
     "type": "Kurs",
     "url": "http://example.com/webdev"
+  },
+  {
+    "id": "99468a83-5fa4-428c-8024-eff61456a9e7",
+    "title": "Einführung in die Webentwicklung",
+    "type": "Kurs",
+    "url": "http://example.com/webdev"
   }
 ]
