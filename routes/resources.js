@@ -4,12 +4,14 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { v4 as uuidv4 } from 'uuid';
 import { validateResource } from '../middleware/validation.js';
+import { timeStamp } from 'console';
 
 const router = express.Router();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const data_file = path.join(__dirname, '../data', 'resources.json');
+const feedback_file = path.join(__dirname, '../data', 'feedback.json')
 
 router.get('/', (req, res, next) => {
     try {
@@ -126,6 +128,34 @@ router.delete('/:id', (req, res, next) => {
         res.status(204).json({ error: "Löschung war erfolgreich." });
 
     } catch (error) {
+        next(error);
+    }
+});
+
+router.post('/:resourceId/feedback', (req, res, next) => {
+    const resourceId = req.params.resourceId;
+    const { feedbackText, userId } = req.body;
+
+    if (!feedbackText || feedbackText.trim().length < 10 || feedbackText.trim().length > 500) {
+        return res.status(400).json({ error: 'Feedback-Text muss zwischen 10 und 500 Zeichen lang sein.'});
+    }
+    const newFeedback = {
+        id: uuidv4(), // Generiere eine eindeutige ID für diesen Feedback-Eintrag
+        resourceId: resourceId, // Die ID der Ressource, zu der dieses Feedback gehört
+        feedbackText: feedbackText.trim(), // Speichere den bereinigten Feedback-Text
+        userId: userId || 'anonymous', // Verwende 'anonymous', wenn keine userId übergeben wird
+        timestamp: new Date().toISOString() // Füge einen Zeitstempel hinzu, wann das Feedback erstellt wurde
+    };
+
+    try {
+        const data = readFileSync(feedback_file, 'utf-8');
+        const feedback = JSON.parse(data);
+        feedback.push(newFeedback);
+        const newFeedbackData = JSON.stringify(feedback, null, 2);
+        writeFileSync(feedback_file, newFeedbackData, 'utf-8');
+        res.status(201).json(newFeedback);
+    }catch (error) {
+        console.error('Fehler beim Schreiben des Feedbacks in die Datei:', error);
         next(error);
     }
 });
