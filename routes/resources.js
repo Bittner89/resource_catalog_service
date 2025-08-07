@@ -3,7 +3,7 @@ import { readFileSync, writeFileSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { v4 as uuidv4 } from 'uuid';
-
+import { validateResource } from '../middleware/validation.js';
 
 const router = express.Router();
 
@@ -20,7 +20,7 @@ router.get('/', (req, res, next) => {
             resources = resources.filter(r => r.type.toLowerCase() === type.toLowerCase());
         }
         if (authorId) {
-            resources = resources.filter(r => r.authorId.toLowerCase() === authorId.toLowerCase());
+            resources = resources.filter(r => r.authorId === authorId);
         }
         res.json(resources);
     } catch (error) {
@@ -47,18 +47,13 @@ router.get('/:id', (req, res, next) => {
 });
 
 
-router.post('/', (req, res, next) => {
-    const newData = req.body;
-
-    if (!newData.title || !newData.type) {
-        res.status(400).json({ error: 'title und type sind erforderlich.' });
-        return;
-    }
+router.post('/', validateResource, (req, res, next) => {
+    const newResourceData = req.body;
 
     const newResource = {
         id: uuidv4(),
-        ...newData
-    }
+        ...newResourceData
+    };
 
     try {
         const data = readFileSync(data_file, 'utf8')

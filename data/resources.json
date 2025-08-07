@@ -1,5 +1,5 @@
 [
-   {
+  {
     "id": "2",
     "title": "Express.js-Tutorial",
     "type": "Video",
@@ -15,6 +15,12 @@
   },
   {
     "id": "b77090ff-63fd-47dd-8add-dbacef4592fa",
+    "title": "Einführung in die Webentwicklung",
+    "type": "Kurs",
+    "url": "http://example.com/webdev"
+  },
+  {
+    "id": "dd40960e-a42a-43e4-adbd-5e3d1fd5e75e",
     "title": "Einführung in die Webentwicklung",
     "type": "Kurs",
     "url": "http://example.com/webdev"
