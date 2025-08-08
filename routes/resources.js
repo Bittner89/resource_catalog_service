@@ -34,11 +34,22 @@ router.get('/', (req, res, next) => {
 router.get('/:id', (req, res, next) => {
     try {
         const resourceId = req.params.id;
+        
+        const ratingsData = readFileSync(ratings_file, 'utf-8');
+        const allRatings = JSON.parse(ratingsData);
+        const resourceRatings = allRatings.filter(rating => rating.resourceId === resourceId);
+        let avarageRating = 0;
+        if (resourceRatings.length > 0) {
+            const sumOfRatings = resourceRatings.reduce((sum, rating) => sum + rating.ratingValue, 0);
+            avarageRating = sumOfRatings / resourceRatings.length;
+        }
+
         const data = readFileSync(data_file, 'utf8')
         const resources = JSON.parse(data);
         const resource = resources.find(r => r.id === resourceId);
 
         if (resource) {
+            resource.avarageRating = avarageRating;
             res.json(resource);
         } else {
              res.status(404).json({ error: `Ressource mit ID ${resourceId} nicht gefunden.` })

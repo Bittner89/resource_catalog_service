@@ -5,5 +5,12 @@
     "ratingValue": 5,
     "userId": "user_abc",
     "timestamp": "2025-08-08T09:11:47.526Z"
+  },
+  {
+    "id": "56",
+    "resourceId": "2",
+    "ratingValue": 5,
+    "userId": "user_abc",
+    "timestamp": "2025-08-08T09:36:11.211Z"
   }
 ]
