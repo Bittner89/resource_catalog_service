@@ -11,6 +11,7 @@ const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const data_file = path.join(__dirname, '../data', 'resources.json');
+const ratings_file = path.join(__dirname, '../data', 'ratings.json');
 const feedback_file = path.join(__dirname, '../data', 'feedback.json')
 
 router.get('/', (req, res, next) => {
@@ -72,6 +73,33 @@ router.post('/', validateResource, (req, res, next) => {
     }
 });
 
+router.post('/:resourceId/ratings', (req, res, next) => {
+    const resourceId =req.params.resourceId;
+    const { ratingValue, userId } = req.body;
+
+    if (!ratingValue || ratingValue < 1 || ratingValue > 5 || !Number.isInteger(ratingValue)) {
+        return res.status(400).json({ error: 'Bewertung muss eine ganze Zahl zwischen 1 und 5 sein.'});
+    }
+    const newRating = {
+        id: uuidv4().slice(0,2),
+        resourceId: resourceId,
+        ratingValue: ratingValue,
+        userId: userId || 'anonymous',
+        timestamp: new Date().toISOString()
+    };
+    try{
+        const data = readFileSync(ratings_file, 'utf-8');
+        const ratings = JSON.parse(data);
+
+        ratings.push(newRating);
+        const newRatingsData = JSON.stringify(ratings, null, 2);
+        writeFileSync(ratings_file, newRatingsData, 'utf-8');
+        res.status(201).json(newRating);
+    }catch (error) {
+        console.error('Fehler beim Schreiben der Bewertung in die Datei:', error);
+        next(error);
+    }
+});
 
 router.put('/:id', (req, res, next) => {
 
