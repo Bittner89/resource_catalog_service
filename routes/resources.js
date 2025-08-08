@@ -53,7 +53,7 @@ router.post('/', validateResource, (req, res, next) => {
     const newResourceData = req.body;
 
     const newResource = {
-        id: uuidv4(),
+        id: uuidv4().slice(0,2),
         ...newResourceData
     };
 
@@ -140,7 +140,7 @@ router.post('/:resourceId/feedback', (req, res, next) => {
         return res.status(400).json({ error: 'Feedback-Text muss zwischen 10 und 500 Zeichen lang sein.'});
     }
     const newFeedback = {
-        id: uuidv4(), // Generiere eine eindeutige ID für diesen Feedback-Eintrag
+        id: uuidv4().slice(0,2), // Generiere eine eindeutige ID für diesen Feedback-Eintrag
         resourceId: resourceId, // Die ID der Ressource, zu der dieses Feedback gehört
         feedbackText: feedbackText.trim(), // Speichere den bereinigten Feedback-Text
         userId: userId || 'anonymous', // Verwende 'anonymous', wenn keine userId übergeben wird
@@ -158,6 +158,39 @@ router.post('/:resourceId/feedback', (req, res, next) => {
         console.error('Fehler beim Schreiben des Feedbacks in die Datei:', error);
         next(error);
     }
+});
+
+
+router.put('/:resourceId/feedback/:feedbackId', (req, res, next) => {
+    const resourceId = req.params.resourceId;
+    const feedbackId = req.params.feedbackId;
+    const { feedbackText } = req.body;
+
+
+if (!feedbackText || feedbackText.trim().length < 10 || feedbackText.trim().length > 500) {
+        return res.status(400).json({ error: 'Aktualisierter Feedback-Text muss zwischen 10 und 500 Zeichen lang sein.'});
+}
+        try {
+            const data = readFileSync(feedback_file, 'utf-8');
+            let feedback = JSON.parse(data);
+
+            const feedbackIndex = feedback.findIndex(f => f.id === feedbackId && f.resourceId === resourceId);
+
+            if (feedbackIndex === -1) {
+                return res.status(404).json({ error: `Feedback mit ID ${feedbackId} für Ressource ${resourceId} nicht gefunden.` });
+            }
+            feedback[feedbackIndex] = {
+                ...feedback[feedbackIndex],
+                feedbackText: feedbackText.trim(),
+                timeStamp: new Date().toISOString()
+            };
+            const newFeedbackData = JSON.stringify(feedback, null, 2);
+            writeFileSync(feedback_file, newFeedbackData, 'utf-8');
+            res.status(200).json(feedback[feedbackIndex]);
+        } catch (error) {
+            console.error('Fehler beim Aktualisieren des Feedbacks:', error);
+            next(error);
+        }
 });
 
 export default router;

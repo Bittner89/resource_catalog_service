@@ -5,7 +5,8 @@
     "type": "Video",
     "authorId": "a1b2c3d4",
     "url": "http://example.com/expressjs",
-    "description": "In diesem Kurs lernt man die Grundlagen der Webentwicklung."
+    "description": "In diesem Kurs lernt man die Grundlagen der Webentwicklung.",
+    "feedbackText": "Dieser Text sollte nicht gespeichert werden."
   },
   {
     "id": "4d58108d-14b3-45e9-9a80-6f2a65851dee",
@@ -30,5 +31,15 @@
     "title": "Einführung in die Webentwicklung",
     "type": "Kurs",
     "url": "http://example.com/webdev"
+  },
+  {
+    "id": "93707dd5-006d-4001-810a-94fe3c24a437",
+    "title": "Grundlagen der Express.js Middleware",
+    "type": "Artikel"
+  },
+  {
+    "id": "ce",
+    "title": "Grundlagen der Express.js Middleware",
+    "type": "Artikel"
   }
 ]
