@@ -232,4 +232,26 @@ if (!feedbackText || feedbackText.trim().length < 10 || feedbackText.trim().leng
         }
 });
 
+router.delete('/:resourceId/feedback/:feedbackId', (req, res, next) => {
+    const resourceId = req.params.resourceId;
+    const feedbackId = req.params.feedbackId;
+
+    try {
+        const data = readFileSync(feedback_file, 'utf-8');
+        let feedback = JSON.parse(data);
+
+        const initialLength = feedback.length;
+        feedback = feedback.filter(f => !(f.id === feedbackId && f.resourceId === resourceId));
+
+        if (feedback.length === initialLength) {
+            return res.status(404).json({ error: `Feedback mit ID ${feedbackId} für Ressource ${resourceId} nicht gefunden.`});
+        }
+        const newFeedbackData = JSON.stringify(feedback, null, 2);
+        writeFileSync(feedback_file, newFeedbackData, 'utf-8');
+        res.status(204).end();
+    } catch (error) {
+        console.error('Fehler beim löschen des Feedbacks:', error);
+        next(error);
+    }
+});
 export default router;
